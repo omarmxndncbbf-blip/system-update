@@ -34,7 +34,6 @@
             <tbody id="logs"></tbody>
         </table>
     </div>
-
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyBCCXqcD29paJYKGI6eevmUuRa4bW11ccU",
@@ -43,26 +42,19 @@
             appId: "1:1073673986144:web:a27de784d878f3d5d5a305"
         };
         firebase.initializeApp(firebaseConfig);
-
         var map = L.map('map').setView([30.0444, 31.2357], 15);
         L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}&hl=ar').addTo(map);
-
         var markers = {};
-
         firebase.database().ref('tracking').on('value', (snap) => {
             const data = snap.val();
             const logs = document.getElementById('logs');
             logs.innerHTML = "";
-            
             for (let id in data) {
                 const d = data[id];
                 const pos = [d.lat, d.lng];
-                
                 if (markers[id]) { markers[id].setLatLng(pos); } 
                 else { markers[id] = L.marker(pos).addTo(map); }
-
                 const gMapsLink = "https://www.google.com/maps?q=" + d.lat + "," + d.lng + "&t=k";
-
                 logs.innerHTML += "<tr>" +
                     "<td><b>" + d.device + "</b></td>" +
                     "<td><a href='" + gMapsLink + "' target='_blank' class='btn-go'>فتح الموقع</a></td>" +
@@ -74,4 +66,3 @@
     </script>
 </body>
 </html>
-

