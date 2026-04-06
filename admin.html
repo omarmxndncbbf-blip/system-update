@@ -2,20 +2,20 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>OMAR INTEL COMMAND</title>
+    <title>OMAR COMMAND CENTER</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
-        body { margin:0; background:#050a10; color:#00ffcc; font-family: sans-serif; }
+        body { margin:0; background:#050a10; color:#00ffcc; font-family:sans-serif; }
         #map { height: 45vh; border-bottom: 2px solid #00ffcc; }
         .panel { padding: 15px; }
         table { width:100%; border-collapse:collapse; background:#0d1117; }
         th { background:#161b22; padding:12px; color:#8b949e; border-bottom:2px solid #30363d; }
         td { padding:12px; border-bottom:1px solid #30363d; text-align:center; font-size:14px; }
         .btn-go { background:#238636; color:white; border:none; padding:8px 15px; border-radius:5px; text-decoration:none; display:inline-block; font-weight:bold; }
-        .high-acc { color: #3fb950; font-weight: bold; }
+        .high-acc { color:#3fb950; font-weight:bold; }
     </style>
 </head>
 <body>
@@ -25,15 +25,16 @@
         <table>
             <thead>
                 <tr>
-                    <th>الموبايل</th>
+                    <th>الجهاز</th>
                     <th>الخريطة</th>
                     <th>الدقة</th>
-                    <th>الوقت</th>
+                    <th>التوقيت</th>
                 </tr>
             </thead>
             <tbody id="logs"></tbody>
         </table>
     </div>
+
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyBCCXqcD29paJYKGI6eevmUuRa4bW11ccU",
@@ -42,19 +43,26 @@
             appId: "1:1073673986144:web:a27de784d878f3d5d5a305"
         };
         firebase.initializeApp(firebaseConfig);
+
         var map = L.map('map').setView([30.0444, 31.2357], 15);
         L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}&hl=ar').addTo(map);
+
         var markers = {};
+
         firebase.database().ref('tracking').on('value', (snap) => {
             const data = snap.val();
             const logs = document.getElementById('logs');
             logs.innerHTML = "";
+            
             for (let id in data) {
                 const d = data[id];
                 const pos = [d.lat, d.lng];
+                
                 if (markers[id]) { markers[id].setLatLng(pos); } 
                 else { markers[id] = L.marker(pos).addTo(map); }
+
                 const gMapsLink = "https://www.google.com/maps?q=" + d.lat + "," + d.lng + "&t=k";
+
                 logs.innerHTML += "<tr>" +
                     "<td><b>" + d.device + "</b></td>" +
                     "<td><a href='" + gMapsLink + "' target='_blank' class='btn-go'>فتح الموقع</a></td>" +
